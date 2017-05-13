@@ -1,0 +1,6 @@
+19,19,maincharacter
+5,19,monster
+11,7,treasure
+2,10,treasure
+8,0,treasure
+19,17,exit
