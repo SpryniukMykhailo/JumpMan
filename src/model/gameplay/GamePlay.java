@@ -3,40 +3,54 @@ package model.gameplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import model.abstracts.AbstractMovingObject;
+import model.enums.MovingDirection;
 import model.objects.MainCharacter;
 
-public class GamePlay  {
-    private GridPane gridPane;
-    private MainCharacter mc;
-    private Label label;
+import java.util.LinkedList;
 
-    public GamePlay(GridPane gridPane, MainCharacter character) {
-        this.gridPane = gridPane;
-        mc = character;
-        label = new Label();
-        label.setGraphic(new ImageView(mc.getImage()));
-        gridPane.add(label, mc.getX(), mc.getY());
+public class GamePlay  {
+    private LinkedList<AbstractMovingObject> characters;
+
+    public GamePlay(LinkedList<AbstractMovingObject> characters) {
+        this.characters = characters;
     }
-    
-    public void moveUp() {
-        gridPane.getChildren().remove(gridPane.getChildren().indexOf(label));
-        gridPane.add(label, mc.getX(), mc.getY() - 1);
-        mc.setPosition(mc.getX(), mc.getY() - 1);
+
+    protected boolean checkAvailability(int x, int y) {
+        return true;
     }
-    public void moveDown() {
-        gridPane.getChildren().remove(gridPane.getChildren().indexOf(label));
-        gridPane.add(label, mc.getX(), mc.getY() + 1);
-        mc.setPosition(mc.getX(), mc.getY() + 1);
+
+    protected void move(int x, int y, AbstractMovingObject movingObject) {
+        if (checkAvailability(x, y)) {
+            movingObject.setPosition(x, y);
+            //gridPane.getChildren().remove(gridPane.getChildren().indexOf(movingObject.getLabel()));
+            //gridPane.add(movingObject.getLabel(), x, y);
+            //movingObject.setPosition(x, y);
+        } else {
+            //No movement.
+        }
     }
-    public void moveLeft() {
-        gridPane.getChildren().remove(gridPane.getChildren().indexOf(label));
-        gridPane.add(label, mc.getX() - 1, mc.getY());
-        mc.setPosition(mc.getX() - 1, mc.getY());
-    }
-    public void moveRight() {
-        gridPane.getChildren().remove(gridPane.getChildren().indexOf(label));
-        gridPane.add(label, mc.getX() + 1, mc.getY());
-        mc.setPosition(mc.getX() + 1, mc.getY());
+
+    public void move(MovingDirection direction, AbstractMovingObject movingObject) {
+
+        switch (direction) {
+            case UP: {
+                move(movingObject.getX(), movingObject.getY() - 1, movingObject);
+                break;
+            }
+            case DOWN: {
+                move(movingObject.getX(), movingObject.getY() + 1, movingObject);
+                break;
+            }
+            case LEFT: {
+                move(movingObject.getX() - 1, movingObject.getY(), movingObject);
+                break;
+            }
+            case RIGHT: {
+                move(movingObject.getX() + 1, movingObject.getY(), movingObject);
+                break;
+            }
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package model.objects;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import model.abstracts.AbstractGameObject;
 import model.enums.GameObjectType;
 
@@ -9,13 +10,10 @@ import model.enums.GameObjectType;
  */
 
 public class Treasure extends AbstractGameObject {
-    private Image image = new Image("/resources/treasure.png");
 
-    public Treasure() {super.setType(GameObjectType.TREASURE);}
-
-
-    @Override
-    public Image getImage() {
-        return image;
+    public Treasure() {
+        super.setType(GameObjectType.TREASURE);
+        image = new Image("/resources/treasure.png");
+        label.setGraphic(new ImageView(image));
     }
 }

@@ -1,29 +1,32 @@
 package model.gamemap.fs;
 
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import model.abstracts.AbstractGameObject;
 import model.enums.GameObjectType;
 import model.objects.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.LinkedList;
 
-public class GameMap {
-    private MainCharacter mc;
-    private GridPane gPane;
+public class Map {
+    private MapContainer map;
 
-    public GameMap(GridPane gridPane, MainCharacter character) {
-        mc = character;
-        this.gPane = gridPane;
-        drawMap("src/resources/Map.txt");
-        loadObjects("src/resources/ObjectPosition.txt");
+    public Map(String mapFilename, String objectsFilename) {
+        map = new MapContainer();
+        loadMap(mapFilename);
+        loadObjects(objectsFilename);
     }
 
-    private void drawMap(String fileName) {
+    LinkedList<AbstractGameObject> get(int x, int y) {
+        return map.get(x, y);
+    }
+
+    private void loadMap(String fileName) {
         File file = new File(fileName);
-        if (!file.exists()) {throw new IllegalArgumentException("filename must not be empty");}
+        if (!file.exists()) {
+            throw new IllegalArgumentException("filename must not be empty");
+        }
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String str;
@@ -32,20 +35,14 @@ public class GameMap {
             while ((str = bufferedReader.readLine()) != null) {
                 int x = 0;
                 for (String s : str.split(",")) {
-                    drawObj(x, y, createObj(s));
+                    map.add(x, y, createObj(s));
                     x++;
                 }
                 y++;
             }
-        } catch (Exception e) {e.printStackTrace();}
-
-    }
-
-    private void drawObj(int x, int y, AbstractGameObject gameObject) {
-        Label label  = new Label();
-        label.setGraphic(new ImageView(gameObject.getImage()));
-        gPane.add(label, x, y);
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadObjects(String fileName) {
@@ -57,13 +54,11 @@ public class GameMap {
             while ((string = bufferedReader.readLine()) != null) {
                 str = string;
                 String[] s = str.split(",");
-                if (s[2].toUpperCase().equals("MAINCHARACTER")) {
-                    mc.setPosition(Integer.parseInt(s[0]),Integer.parseInt(s[1]));
-                } else {
-                    drawObj(Integer.parseInt(s[0]),Integer.parseInt(s[1]), createObj(s[2]));
-                }
+                map.add(Integer.parseInt(s[0]), Integer.parseInt(s[1]), createObj(s[2]));
             }
-        } catch (Exception e) {e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private AbstractGameObject createObj(String str) {
@@ -99,7 +94,10 @@ public class GameMap {
             default:
                 throw new IllegalArgumentException("Cant create object type: " + type);
         }
-        return  obj;
-    }
+        return obj;
     }
 
+      public void forEach(TriFunction<Integer, Integer, AbstractGameObject, Void> lambda) {
+          map.forEach(lambda);
+      }
+}
